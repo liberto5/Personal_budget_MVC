@@ -1,11 +1,156 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Welcome to Personal Budget{% endblock %}
+
+{% block footer %}
+
+	<script>
+	    $.validator.addMethod('validName',
+            function(value, element, param) {
+                if (value != '') {
+                    if (value.match(/^[\w.]+$/i) == null) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+            'Name has to consist only of alphanumeric characters'
+        );
+		$(document).ready(function()
+		{
+			$('#formSignup').validate({
+                rules: {
+                    name: {
+						required: true,
+						rangelength: [3, 20],
+						validName: true
+					},
+                    email: {
+                        required: true,
+                        email: true,
+						remote: '/account/validate-email'
+                    },
+                    password: {
+                        required: true,
+						rangelength: [8, 20]
+                    },
+                    passwordConfirm: {
+                        equalTo: '#password'
+                    }
+                },
+                messages: {
+                    email: {
+                        remote: 'E-mail is already taken'
+                    }
+                }
+            });
+        });
+	</script>
+
+{% endblock %}
 
 {% block body %}
 
-    <h1>Welcome</h1>
-	
-	<a href="/signup/new">Sign up</a>
+
+
+
+
+{% if current_user %}
+Hello {{ current_user.username }}.
+{% else %}
+niezalogowany
+{% endif %}
+
+
+
+
+
+	<div class="container bg-white text-center col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4 mt-sm-5 p-1 p-sm-3 shadow">
+		<h1>Personal Budget</h1>
+		<p class="heading">Take control of your finances</p>
+			<div id="accordion">
+				<div class="card">
+					<a class="card-link " data-toggle="collapse" href="#signIn">
+						<div class="card-header">
+							Sign in
+						</div>
+					</a>
+					<form method="post" action="/login/create">
+						<div id="signIn" class="collapse" data-parent="#accordion">
+							<div class="card-body">
+								<div class="p-1">
+									<input type="email" class="form-control form-control" placeholder="E-mail address" name="email" value="{{ email }}">
+								</div>
+								<div class="p-1">
+									<input type="password" class="form-control form-control" placeholder="Password" name="password">
+								</div>
+								<div class="p-1">
+									<button type="submit" class="btn btn-primary">Sign in</button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="card">
+					<a class="collapsed card-link" data-toggle="collapse" href="#signUp">
+						<div class="card-header">
+							Sign up
+						</div>
+					</a>
+					
+					{% if user.errors is not empty %}
+						<p>Please note:</p>
+						<ul>
+							{% for error in user.errors %}
+								<li>{{ error }}</li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+					
+					<form method="post" action="/signup/create" id="formSignup">
+						<div id="signUp" class="collapse show" data-parent="#accordion">
+							<div class="card-body">
+								<div class="p-1">
+									<input type="text" class="form-control form-control" name="name" placeholder="Name" value="{{ user.name }}" />
+								</div>
+								
+								{% if user.error_name is not empty %}
+									{% for error in user.error_name %}
+										<li>{{ error }}</li>
+									{% endfor %}
+								{% endif %}
+								
+								<div class="p-1">
+									<input type="text" class="form-control form-control" name="email" placeholder="E-mail address" value="{{ user.email }}" />
+								</div>
+								
+								{% if user.error_email is not empty %}
+									{% for error in user.error_email %}
+										<li>{{ error }}</li>
+									{% endfor %}
+								{% endif %}
+								
+								<div class="p-1">
+									<input type="password" class="form-control form-control" name="password1" placeholder="Password" id="password"/>
+								</div>
+								<div class="p-1">
+									<input type="password" class="form-control form-control" name="password2" placeholder="Confirm password" id="passwordConfirm"/>
+								</div>
+								
+								{% if user.error_password is not empty %}
+									{% for error in user.error_password %}
+										<li>{{ error }}</li>
+									{% endfor %}
+								{% endif %}
+								
+								<div class="p-1">
+									<button type="submit" class="btn btn-primary">Sign up</button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+	</div>
 
 {% endblock %}
