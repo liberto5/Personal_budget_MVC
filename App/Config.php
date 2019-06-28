@@ -39,4 +39,10 @@ class Config
      * @var boolean
      */
     const SHOW_ERRORS = true;
+	
+	/**
+     * Secret key for hashing
+     * @var boolean
+     */
+    const SECRET_KEY = 'xg7JKQ1Y4x8zc4cEKKt732lPAW2p07E3';
 }
