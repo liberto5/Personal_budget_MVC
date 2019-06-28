@@ -76,13 +76,25 @@ niezalogowany
 						</div>
 					</a>
 					<form method="post" action="/login/create">
-						<div id="signIn" class="collapse" data-parent="#accordion">
+						<div id="signIn" class="collapse show" data-parent="#accordion">
 							<div class="card-body">
+							
+								{% for message in flash_messages %}
+									<div>
+										{{ message }}
+									</div>
+								{% endfor %}
+								
 								<div class="p-1">
 									<input type="email" class="form-control form-control" placeholder="E-mail address" name="email" value="{{ email }}">
 								</div>
 								<div class="p-1">
 									<input type="password" class="form-control form-control" placeholder="Password" name="password">
+								</div>
+								<div>
+									<label>
+										<input type="checkbox" name="remember_me" {% if remember_me %} checked="checked"{% endif %} /> Remember me
+									</label>
 								</div>
 								<div class="p-1">
 									<button type="submit" class="btn btn-primary">Sign in</button>

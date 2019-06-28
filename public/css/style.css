@@ -1,0 +1,42 @@
+body
+{
+	background-image: url("img/bg.png");
+}
+
+h1
+{
+	font-family: 'Anton', sans-serif;
+	font-size: 40px;
+}
+
+.heading
+{
+	font-family: 'Pacifico', cursive;
+	font-size: 24px;
+}
+
+.border
+{
+	border: 1px solid #000000!important;
+}
+
+#chartIncomesContainer,
+#chartExpensesContainer
+{
+	min-width: 300px;
+	max-width: 350px;
+	min-height: 300px;
+	max-height: 350px;
+	padding: 0;
+}
+
+button
+{
+	margin:5px 0;
+}
+
+a:hover
+{
+	text-decoration: none;
+}
+
