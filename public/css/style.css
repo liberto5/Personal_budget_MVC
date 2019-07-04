@@ -35,8 +35,30 @@ button
 	margin:5px 0;
 }
 
-a:hover
+/* unvisited link */
+a:link 
 {
-	text-decoration: none;
+  color: blue;
+  text-decoration: none;
 }
 
+/* visited link */
+a:visited 
+{
+  color: black;
+  text-decoration: none;
+}
+
+/* mouse over link */
+a:hover 
+{
+  color: #202020;
+  text-decoration: none;
+}
+
+/* selected link */
+a:active 
+{
+  color: black;
+  text-decoration: none;
+}

@@ -9,17 +9,17 @@ use \Core\View;
  *
  * PHP version 7.0
  */
-class Items extends Authenticated
+class ShowBalance extends Authenticated
 {
 
     /**
-     * Items index
+     * ShowBalance index
      *
      * @return void
      */
     public function indexAction()
     {
-        View::renderTemplate('Items/index.html');
+        View::renderTemplate('ShowBalance/index.html');
     }
 
     /**

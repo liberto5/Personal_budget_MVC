@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to Personal Budget{% endblock %}
+
+{% block body %}
+
+<h4>{{ current_user.username }}, what you're gonna do?</h4>
+<div class="mt-3" id="main-menu">
+	<a href="#"><button type="button" class="btn btn-primary btn-block">Add income</button></a>
+	<a href="#"><button type="button" class="btn btn-primary btn-block">Add expense</button></a>
+	<a href="#"><button type="button" class="btn btn-primary btn-block">Show balance</button></a>
+	<button type="button" class="btn btn-primary btn-block">Settings</button>
+	<a href="/logout"><button type="button" class="btn btn-primary btn-block">Logout</button></a>
+</div>
+
+{% endblock %}

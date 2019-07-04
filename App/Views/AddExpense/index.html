@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Expense to Personal Budget{% endblock %}
+
+{% block footer %}
+
+	<script>
+		$(document).ready(function()
+		{
+			$('#formAddExpense').validate({
+                rules: {
+                    amount: {
+						required: true,
+						min: 0
+					},
+                    dates: {
+                        required: true,
+                        date: true
+                    },
+                    comment: {
+						rangelength: [0, 100]
+                    }
+                },
+                messages: {
+                    amount: "Amount has to be a positive number",
+					comment: "The comment can not exceed 100 characters"
+                }
+            });
+        });
+	</script>
+
+{% endblock %}
+
+{% block body %}	
+				
+<h4>Add details of expense</h4>
+
+<!--{% if financialOperation.errors is not empty %}
+	<p>Please note:</p>
+	<ul>
+		{% for error in financialOperation.errors %}
+			<li>{{ error }}</li>
+		{% endfor %}
+	</ul>
+{% endif %}-->
+
+<form method="post" action="/AddExpense/create" id="formAddExpense">
+	<div class="input-group mb-2">
+		<div class="input-group-prepend w-25">
+			<span class="input-group-text w-100 justify-content-center">Amount</span>
+		</div>
+		<input type="text" class="form-control" placeholder="0.00" name="amount" />									
+	</div>
+	
+	{% if financialOperation.error_amount is not empty %}
+		{% for error in financialOperation.error_amount %}
+			<li>{{ error }}</li>
+		{% endfor %}
+	{% endif %}
+	
+	<div class="input-group mb-2">
+		<div class="input-group-prepend w-25">
+			<span class="input-group-text w-100 justify-content-center">Date</span>
+		</div>
+		<input type="date" class="form-control" name="dates" />		
+	</div>
+	
+	{% if financialOperation.error_date is not empty %}
+		{% for error in financialOperation.error_date %}
+			<li>{{ error }}</li>
+		{% endfor %}
+	{% endif %}
+	
+	<div class="input-group mb-2">
+		<div class="input-group-prepend w-25">
+			<span class="input-group-text w-100 justify-content-center">Category</span>
+		</div>
+		<div class="dropdown flex-grow-1">
+			<select class="dropdown h-100 w-100" name="category">
+				{% for name in expenses_categories %}
+					<option>{{ expenses_categories[loop.index0].name }}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	
+	<div class="input-group mb-2">
+		<div class="input-group-prepend w-25">
+			<span class="input-group-text w-100 justify-content-center">Payment by</span>
+		</div>
+		<div class="dropdown flex-grow-1">
+			<select class="dropdown h-100 w-100" name="payment">
+				{% for name in payment_methods %}
+					<option>{{ payment_methods[loop.index0].name }}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	
+	<div class="input-group mb-2">
+		<div class="input-group-prepend w-25">
+			<span class="input-group-text w-100 justify-content-center">Comment</span>
+		</div>
+		<textarea class="form-control" name="comment" /></textarea>
+	</div>
+	
+	{% if financialOperation.error_comment is not empty %}
+		{% for error in financialOperation.error_comment %}
+			<li>{{ error }}</li>
+		{% endfor %}
+	{% endif %}
+	
+	<div class="w-100 mt-2">
+		<button type="submit" class="btn btn-primary mr-2">Add</button>
+		<a href="/mainmenu/index"><button type="button" class="btn btn-primary">Cancel</button></a>
+	</div>
+</form>
+
+{% endblock %}
