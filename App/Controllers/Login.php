@@ -26,20 +26,29 @@ class Login extends \Core\Controller
 		
 		$remember_me = isset($_POST['remember_me']);
 
-        if ($user) {
-			
+        if ($user) 
+		{
             Auth::login($user, $remember_me);
-
-            $this->redirect(Auth::getReturnToPage());
-
-        } else {
 			
+			$_SESSION['user_id'] = $user->id;
+			
+			if ($this->redirect(Auth::getReturnToPage()))
+			{
+				$this->redirect(Auth::getReturnToPage());
+			}
+			
+			else
+			{
+				$this->redirect('/mainmenu/index');
+			}
+
+        } 
+		
+		else 
+		{
             Flash::addMessage('Incorrect e-mail or password!');
 
-            View::renderTemplate('Home/index.html', [
-                'email' => $_POST['email'],
-				'remember_me' => $remember_me
-            ]);
+            View::renderTemplate('Home/index.html', ['email' => $_POST['email'], 'remember_me' => $remember_me]);
         }
     }
 	

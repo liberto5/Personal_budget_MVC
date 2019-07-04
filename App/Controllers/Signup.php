@@ -37,4 +37,5 @@ class Signup extends \Core\Controller
     {
         View::renderTemplate('Signup/success.html');
     }
+	
 }

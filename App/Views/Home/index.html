@@ -6,9 +6,11 @@
 
 	<script>
 	    $.validator.addMethod('validName',
-            function(value, element, param) {
+            function(value, element, param) 
+			{
                 if (value != '') {
-                    if (value.match(/^[\w.]+$/i) == null) {
+                    if (value.match(/^[\w.]+$/i) == null) 
+					{
                         return false;
                     }
                 }
@@ -51,118 +53,116 @@
 
 {% block body %}
 
-
-
-
-
-{% if current_user %}
-Hello {{ current_user.username }}.
-{% else %}
-niezalogowany
-{% endif %}
-
-
-
-
-
-	<div class="container bg-white text-center col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4 mt-sm-5 p-1 p-sm-3 shadow">
-		<h1>Personal Budget</h1>
-		<p class="heading">Take control of your finances</p>
-			<div id="accordion">
-				<div class="card">
-					<a class="card-link " data-toggle="collapse" href="#signIn">
-						<div class="card-header">
-							Sign in
-						</div>
-					</a>
-					<form method="post" action="/login/create">
-						<div id="signIn" class="collapse show" data-parent="#accordion">
-							<div class="card-body">
-							
-								{% for message in flash_messages %}
-									<div>
-										{{ message }}
-									</div>
-								{% endfor %}
-								
-								<div class="p-1">
-									<input type="email" class="form-control form-control" placeholder="E-mail address" name="email" value="{{ email }}">
-								</div>
-								<div class="p-1">
-									<input type="password" class="form-control form-control" placeholder="Password" name="password">
-								</div>
-								<div>
-									<label>
-										<input type="checkbox" name="remember_me" {% if remember_me %} checked="checked"{% endif %} /> Remember me
-									</label>
-								</div>
-								<div class="p-1">
-									<button type="submit" class="btn btn-primary">Sign in</button>
-								</div>
-							</div>
-						</div>
-					</form>
-				</div>
-				<div class="card">
-					<a class="collapsed card-link" data-toggle="collapse" href="#signUp">
-						<div class="card-header">
-							Sign up
-						</div>
-					</a>
-					
-					{% if user.errors is not empty %}
-						<p>Please note:</p>
-						<ul>
-							{% for error in user.errors %}
-								<li>{{ error }}</li>
-							{% endfor %}
-						</ul>
+<div id="accordion">
+	<div class="card">
+		<a class="card-link " data-toggle="collapse" href="#signIn">
+			<div class="card-header">
+				Sign in
+			</div>
+		</a>
+		<form method="post" action="/login/create">
+			<div id="signIn" class="collapse
+			
+					{% if user.name is defined %}
+						
+					{% else %}
+						show
 					{% endif %}
-					
-					<form method="post" action="/signup/create" id="formSignup">
-						<div id="signUp" class="collapse show" data-parent="#accordion">
-							<div class="card-body">
-								<div class="p-1">
-									<input type="text" class="form-control form-control" name="name" placeholder="Name" value="{{ user.name }}" />
-								</div>
-								
-								{% if user.error_name is not empty %}
-									{% for error in user.error_name %}
-										<li>{{ error }}</li>
-									{% endfor %}
-								{% endif %}
-								
-								<div class="p-1">
-									<input type="text" class="form-control form-control" name="email" placeholder="E-mail address" value="{{ user.email }}" />
-								</div>
-								
-								{% if user.error_email is not empty %}
-									{% for error in user.error_email %}
-										<li>{{ error }}</li>
-									{% endfor %}
-								{% endif %}
-								
-								<div class="p-1">
-									<input type="password" class="form-control form-control" name="password1" placeholder="Password" id="password"/>
-								</div>
-								<div class="p-1">
-									<input type="password" class="form-control form-control" name="password2" placeholder="Confirm password" id="passwordConfirm"/>
-								</div>
-								
-								{% if user.error_password is not empty %}
-									{% for error in user.error_password %}
-										<li>{{ error }}</li>
-									{% endfor %}
-								{% endif %}
-								
-								<div class="p-1">
-									<button type="submit" class="btn btn-primary">Sign up</button>
-								</div>
-							</div>
+			
+			" data-parent="#accordion">
+				<div class="card-body">
+				
+					{% for message in flash_messages %}
+						<div>
+							{{ message }}
 						</div>
-					</form>
+					{% endfor %}
+					
+					<div class="p-1">
+						<input type="email" class="form-control form-control" placeholder="E-mail address" name="email" value="{{ email }}">
+					</div>
+					<div class="p-1">
+						<input type="password" class="form-control form-control" placeholder="Password" name="password">
+					</div>
+					<div>
+						<label>
+							<input type="checkbox" name="remember_me" {% if remember_me %} checked="checked"{% endif %} /> Remember me
+						</label>
+					</div>
+					<div class="p-1">
+						<button type="submit" class="btn btn-primary">Sign in</button>
+					</div>
 				</div>
 			</div>
+		</form>
 	</div>
+	<div class="card">
+		<a class="collapsed card-link" data-toggle="collapse" href="#signUp">
+			<div class="card-header">
+				Sign up
+			</div>
+		</a>
+		
+		{% if user.errors is not empty %}
+			<p>Please note:</p>
+			<ul>
+				{% for error in user.errors %}
+					<li>{{ error }}</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+		
+		<form method="post" action="/signup/create" id="formSignup">
+			<div id="signUp" class='collapse
+			
+					{% if user.name is defined %}
+						show
+					{% else %}
+						
+					{% endif %}
+			
+			' data-parent="#accordion">
+				<div class="card-body">
+					<div class="p-1">
+						<input type="text" class="form-control form-control" name="name" placeholder="Name" value="{{ user.name }}" />
+					</div>
+					
+					{% if user.error_name is not empty %}
+						{% for error in user.error_name %}
+							<li>{{ error }}</li>
+						{% endfor %}
+					{% endif %}
+					
+					<div class="p-1">
+						<input type="text" class="form-control form-control" name="email" placeholder="E-mail address" value="{{ user.email }}" />
+					</div>
+					
+					{% if user.error_email is not empty %}
+						{% for error in user.error_email %}
+							<li>{{ error }}</li>
+						{% endfor %}
+					{% endif %}
+					
+					<div class="p-1">
+						<input type="password" class="form-control form-control" name="password1" placeholder="Password" id="password"/>
+					</div>
+					<div class="p-1">
+						<input type="password" class="form-control form-control" name="password2" placeholder="Confirm password" id="passwordConfirm"/>
+					</div>
+					
+					{% if user.error_password is not empty %}
+						{% for error in user.error_password %}
+							<li>{{ error }}</li>
+						{% endfor %}
+					{% endif %}
+					
+					<div class="p-1">
+						<button type="submit" class="btn btn-primary">Sign up</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
 
 {% endblock %}
