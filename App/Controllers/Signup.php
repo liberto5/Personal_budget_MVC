@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use \Core\View;
 use \App\Models\User;
+use PDO;
 
 /**
  * Signup controller
@@ -22,9 +23,9 @@ class Signup extends \Core\Controller
     {
         $user = new User($_POST);
 
-        if ($user->save())
+        if ($user->save() && $user->setDefaultPaymentMethodsToUser() && $user->setDefaultIncomesCategoriesToUser() && $user->setDefaultExpensesCategoriesToUser())
 		{
-            $this->redirect('/signup/success');
+			$this->redirect('/signup/success');
 		}
 
         else 
