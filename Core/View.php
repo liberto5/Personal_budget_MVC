@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use App\Models\Balance;
+
 /**
  * View
  *
@@ -51,6 +53,10 @@ class View
 			$twig->addGlobal('incomes_categories', \App\IncomesCategories::getUserIncomesCategories());
 			$twig->addGlobal('expenses_categories', \App\ExpensesCategories::getUserExpensesCategories());
 			$twig->addGlobal('payment_methods', \App\PaymentMethods::getUserPaymentMethods());
+			$twig->addGlobal('incomes_by_categories', \App\IncomesByCategories::getIncomesByCategories());
+			$twig->addGlobal('expenses_by_categories', \App\ExpensesByCategories::getExpensesByCategories());
+			$twig->addGlobal('total_income', \App\IncomeTotal::getTotalUserIncome());
+			$twig->addGlobal('total_expense', \App\ExpenseTotal::getTotalUserExpense());
         }
 
         echo $twig->render($template, $args);

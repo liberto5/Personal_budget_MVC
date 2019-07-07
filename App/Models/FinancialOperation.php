@@ -110,7 +110,7 @@ class FinancialOperation extends \Core\Model
 	public function getIncomeId()
 	{
 		$user_id = $_SESSION['user_id'];
-		$income_category = $this->income_category;
+		$income_category = $this->category;
 		
 		$sql = 'SELECT id FROM incomes_category_assigned_to_users WHERE user_id = :id AND name = :name';
 

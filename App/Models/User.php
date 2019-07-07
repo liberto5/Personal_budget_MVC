@@ -65,6 +65,94 @@ class User extends \Core\Model
 		return false;
 		
 	}
+	
+    /**
+     * Set default values of categories of payment methods to new user
+     *
+     * @return boolean  True if set successfully, false otherwise
+     */
+	public function setDefaultPaymentMethodsToUser()
+	{
+		$user = static::findByEmail($this->email);
+		$user_id = $user->id;
+		
+		$adding_standard_payment_methods = "INSERT INTO payment_methods_assigned_to_users (name) SELECT name FROM payment_methods_default";
+		$adding_user_id_to_payment_methods = "UPDATE payment_methods_assigned_to_users SET user_id = '$user_id' WHERE user_id = 0";
+
+        $db = static::getDB();
+        $stmt1 = $db->prepare($adding_standard_payment_methods);
+        $stmt2 = $db->prepare($adding_user_id_to_payment_methods);
+        $stmt2->bindValue(':user_id', $user_id, PDO::PARAM_STR);
+
+        if ($stmt1->execute() && $stmt2->execute())
+		{
+			return true;
+		}
+		
+		else
+		{
+			return false;
+		}
+	}
+	
+    /**
+     * Set default values of categories of incomes to new user
+     *
+     * @return boolean  True if set successfully, false otherwise
+     */
+	public function setDefaultIncomesCategoriesToUser()
+	{
+		$user = static::findByEmail($this->email);
+		$user_id = $user->id;
+		
+		$adding_standard_incomes_categories = "INSERT INTO incomes_category_assigned_to_users (name) SELECT name FROM incomes_category_default";
+		$adding_user_id_to_standard_incomes_categories = "UPDATE incomes_category_assigned_to_users SET user_id = '$user_id' WHERE user_id = 0";
+
+        $db = static::getDB();
+        $stmt1 = $db->prepare($adding_standard_incomes_categories);
+        $stmt2 = $db->prepare($adding_user_id_to_standard_incomes_categories);
+        $stmt2->bindValue(':user_id', $user_id, PDO::PARAM_STR);
+
+        if ($stmt1->execute() && $stmt2->execute())
+		{
+			return true;
+		}
+		
+		else
+		{
+			return false;
+		}
+	}
+
+		
+    /**
+     * Set default values of categories of expenses to new user
+     *
+     * @return boolean  True if set successfully, false otherwise
+     */
+	public function setDefaultExpensesCategoriesToUser()
+	{
+		$user = static::findByEmail($this->email);
+		$user_id = $user->id;
+		
+		$adding_standard_expenses_categories = "INSERT INTO expenses_category_assigned_to_users (name) SELECT name FROM expenses_category_default";
+		$adding_user_id_to_standard_expenses_categories = "UPDATE expenses_category_assigned_to_users SET user_id = '$user_id' WHERE user_id = 0";
+
+        $db = static::getDB();
+        $stmt1 = $db->prepare($adding_standard_expenses_categories);
+        $stmt2 = $db->prepare($adding_user_id_to_standard_expenses_categories);
+        $stmt2->bindValue(':user_id', $user_id, PDO::PARAM_STR);
+
+        if ($stmt1->execute() && $stmt2->execute())
+		{
+			return true;
+		}
+		
+		else
+		{
+			return false;
+		}
+	}
 
     /**
      * Validate current property values, adding valiation error messages to the errors array property

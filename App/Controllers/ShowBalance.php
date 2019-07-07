@@ -3,9 +3,12 @@
 namespace App\Controllers;
 
 use \Core\View;
+use \App\Models\Balance;
+use \App\Auth;
+use \App\Flash;
 
 /**
- * Items controller (example)
+ * ShowBalance controller
  *
  * PHP version 7.0
  */
@@ -13,32 +16,48 @@ class ShowBalance extends Authenticated
 {
 
     /**
-     * ShowBalance index
+     * Show balance index
      *
      * @return void
      */
     public function indexAction()
     {
-        View::renderTemplate('ShowBalance/index.html');
+		View::renderTemplate('ShowBalance/index.html');
     }
 
     /**
-     * Add a new item
+     * Show balance from selected period of time
      *
      * @return void
      */
-    public function newAction()
+	public function showAction()
     {
-        echo "new action";
-    }
+		$balance = new Balance($_POST);
+		
+		$_SESSION['period'] = $balance->periodsOptions;
+		
+		if ($_SESSION['period'] == "custom")
+		{
+			$_SESSION['custom_start'] = $balance->custom_start;
+			$_SESSION['custom_end'] = $balance->custom_end;
+		}
 
-    /**
-     * Show an item
-     *
-     * @return void
-     */
-    public function showAction()
-    {
-        echo "show action";
+		if (!$balance->getIncomesGroupedByCategories() || !$balance->getIncomeTotalAmount())
+		{
+			Flash::addMessage('You have no incomes in selected period of time');
+			//View::renderTemplate('ShowBalance/index.html');
+		}
+		
+		else if (!$balance->getExpensesGroupedByCategories() || !$balance->getExpenseTotalAmount())
+		{
+			//Flash::addMessage('You have no expenses in selected period of time');
+			//View::renderTemplate('ShowBalance/index.html');
+		}
+		
+		else 
+		{
+			View::renderTemplate('ShowBalance/index.html');
+		}
+
     }
 }
