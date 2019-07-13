@@ -17,12 +17,21 @@
 				},
 				data: [
 				{
-					type: "pie",
+					type: "doughnut",
 					startAngle: 270,
 					yValueFormatString: "##0.00\"\"",
 					indexLabel: "{label} {y}",
 					dataPoints: 
 					[
+						while ($incomes_by_categories
+						
+						
+						
+						{% for name, sum in incomes_by_categories %}
+							<tr><td> {{ incomes_by_categories[loop.index0].name }} </td><td> {{ incomes_by_categories[loop.index0].sum }} </td></tr>
+						{% endfor %}
+						
+						
 						<?php
 							while ($row_with_incomes = $_SESSION['result_incomes']->fetch_assoc())
 							{
@@ -48,7 +57,7 @@
 				data: [
 				{
 					
-					type: "pie",
+					type: "doughnut",
 					startAngle: 270,
 					yValueFormatString: "##0.00\"\"",
 					indexLabel: "{label} {y}",
@@ -78,29 +87,24 @@
 		
 			<legend class="border bg-light"> Your finances </legend>
 			
-			<form id="show-balance-form" method="post" action="/ShowBalance/show" >
+			<form method="post" action="/ShowBalance/show">
 				<div class="input-group mb-2 w-75 mx-auto">
 					<div class="input-group-prepend w-50">
 						<span class="input-group-text w-100 justify-content-center">Select period of time</span>
 					</div>
-					<select id="periodsOptions" name="periodsOptions" class="w-50" onchange="this.form.submit();">
+					<select id="periodsOptions" name="periodsOptions" class="w-50" onchange="if(this.options[this.selectedIndex].value!='custom'){ this.form.submit(); }">
 						<option value="current_month">Current month</option>
 						<option value="previous_month">Previous month</option>
 						<option value="current_year">Current year</option>
 						<option value="custom">Custom</option>
 					</select>	
-					<div class="w-100 mt-2">
-						<button type="submit" class="btn btn-primary mr-2">Choose period</button>
-						<a href="/mainmenu/index"><button type="button" class="btn btn-primary">Back to main menu</button></a>
-					</div>
 				</div>
 			</form>
 			
 			<script>			
-			$("#show-balance-form").on("submit", function () {
-				console.log('called');
+			$("#periodsOptions").on("change", function () {        
 				$modal = $('#myModal');
-				if($(this).value === 'custom'){
+				if($(this).val() === 'custom'){
 					$modal.modal('show');
 				}
 			});
@@ -109,7 +113,7 @@
 			<div class="modal fade" id="myModal">
 				<div class="modal-dialog">
 					<div class="modal-content">
-						<form method="post">
+						<form method="post" action="/ShowBalance/show">
 							<!-- Modal Header -->
 							<div class="modal-header">
 								<h4 class="modal-title">Select custom period of time: </h4>
@@ -141,8 +145,6 @@
 					</div>
 				</div>
 			</div>
-			
-			
 			
 			<fieldset class="border m-3">
 			

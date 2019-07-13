@@ -34,30 +34,40 @@ class ShowBalance extends Authenticated
     {
 		$balance = new Balance($_POST);
 		
-		$_SESSION['period'] = $balance->periodsOptions;
+		if(isset($balance->periodsOptions))
+		{
+			$_SESSION['period'] = $balance->periodsOptions;
+		}
 		
-		if ($_SESSION['period'] == "custom")
+		else if (isset($balance->custom_start) && isset($balance->custom_end))
 		{
 			$_SESSION['custom_start'] = $balance->custom_start;
 			$_SESSION['custom_end'] = $balance->custom_end;
 		}
 
-		if (!$balance->getIncomesGroupedByCategories() || !$balance->getIncomeTotalAmount())
+		if(isset($_SESSION['period']) || ((isset($_SESSION['custom_start']) && (isset($_SESSION['custom_end'])))))
 		{
-			Flash::addMessage('You have no incomes in selected period of time');
-			//View::renderTemplate('ShowBalance/index.html');
-		}
+			if (!$balance->getIncomesGroupedByCategories() || !$balance->getIncomeTotalAmount())
+			{
+				//Flash::addMessage('You have no incomes in selected period of time');
+				echo "You have no incomes in selected period of time";
+				View::renderTemplate('ShowBalance/index.html');
+			}
 		
-		else if (!$balance->getExpensesGroupedByCategories() || !$balance->getExpenseTotalAmount())
-		{
-			//Flash::addMessage('You have no expenses in selected period of time');
-			//View::renderTemplate('ShowBalance/index.html');
-		}
+			if (!$balance->getExpensesGroupedByCategories() || !$balance->getExpenseTotalAmount())
+			{
+				//Flash::addMessage('You have no expenses in selected period of time');
+				echo "You have no expenses in selected period of time";
+				View::renderTemplate('ShowBalance/index.html');
+			}
 		
 		else 
 		{
 			View::renderTemplate('ShowBalance/index.html');
 		}
-
+		
+		$balance->unsetAllSessionVariable();
+		
+		}
     }
 }
