@@ -58,11 +58,6 @@ class Balance extends \Core\Model
 			{
 				$sql = "SELECT cat.name name, SUM(inc.amount) sum FROM incomes_category_assigned_to_users cat INNER JOIN incomes inc WHERE inc.income_category_assigned_to_user_id = cat.id AND date_of_income BETWEEN :start AND :end AND inc.user_id = :user_id GROUP BY cat.name ORDER BY SUM(inc.amount) DESC";
 			}
-				
-			//echo $_SESSION['period'];
-			//echo $_SESSION['user_id'];
-			//echo $_SESSION['custom_start'];
-			//echo $_SESSION['custom_end'];
 
 			$db = static::getDB();
 			$stmt = $db->prepare($sql);

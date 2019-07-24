@@ -28,11 +28,13 @@ h1
 	min-height: 300px;
 	max-height: 350px;
 	padding: 0;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 button
 {
-	margin:5px 0;
+	margin:5px 0!important;
 }
 
 /* unvisited link */
@@ -45,20 +47,50 @@ a:link
 /* visited link */
 a:visited 
 {
-  color: black;
+  color: blue;
   text-decoration: none;
 }
 
 /* mouse over link */
 a:hover 
 {
-  color: #202020;
-  text-decoration: none;
+  color: #000099!important;
+  text-decoration: none!important;
 }
 
 /* selected link */
 a:active 
 {
-  color: black;
+  color: #200000;
   text-decoration: none;
+}
+
+#logo
+{
+	color: #200000;
+}
+
+#addingOperationMessage,
+{
+	color: #1804fe;
+	font-style: italic;
+	vertical-align: middle;
+}
+
+#amount-error,
+#dates-error,
+#comment-error
+{
+	margin-left: auto;
+    margin-right: auto;
+	font-style: italic;
+	color: red;
+}
+
+.noOperationsInTime,
+#logoutMessage
+{
+	color: #1804fe;
+	font-style: italic;
+	margin: 10px 5px 10px 5px;
 }

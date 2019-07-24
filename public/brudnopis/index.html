@@ -1,77 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <title>Bootstrap Example</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
- 
-  
- 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+	<link href="https://fonts.googleapis.com/css?family=Anton|Pacifico&amp;subset=latin-ext" rel="stylesheet">
+	<link rel="stylesheet" href="/css/style.css" type="text/css"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+	
+	
+	
+
 </head>
 <body>
 
-			<form method="post">
-				<div class="input-group mb-2 w-75 mx-auto">
-					<div class="input-group-prepend w-50">
-						<span class="input-group-text w-100 justify-content-center">Select period of time</span>
-					</div>
-					<select id="periodsOptions" name="periodsOptions" class="w-50" onchange="if(this.options[this.selectedIndex].value!='custom'){ this.form.submit(); }">
-						<option value="current_month">Current month</option>
-						<option value="previous_month" >Previous month</option>
-						<option value="current_year" >Current year</option>
-						<option value="custom" >Custom</option>
-					</select>	
-				</div>
-			</form>
+<select id="sort-item">
+             <option value="Alphabetical" data-sort="1">Alphabetical</option>
+             <option value="low to high" data-sort="2">Low to High Price</option>
+             <option value="high to low" data-sort="3">High to Low Price</option>
+ </select>
 
-			<script>			
-			$("#periodsOptions").on("change", function () {        
-				$modal = $('#myModal');
-				if($(this).val() === 'custom'){
-					$modal.modal('show');
-				}
-			});
-			</script>
-
-			<div class="modal fade" id="myModal">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<form method="post">
-							<!-- Modal Header -->
-							<div class="modal-header">
-								<h4 class="modal-title">Select custom period of time: </h4>
-								<button type="button" class="close" data-dismiss="modal">&times;</button>
-							</div>
+  <script>
+  
+window.onload = function() {
+    var selItem = sessionStorage.getItem("SelItem");  
+    $('#sort-item').val(selItem);
+    }
+    $('#sort-item').change(function() { 
+        var selVal = $(this).val();
+        sessionStorage.setItem("SelItem", selVal);
+    });
 						
-							<!-- Modal body -->
-							<div class="modal-body">
-								<div class="input-group mb-2 w-75">
-									<div class="input-group-prepend w-25">
-										<span class="input-group-text w-100 justify-content-center">Start:</span>
-									</div>
-									<input type="date" name="custom_start" class="form-control" required>
-								</div>
-								<div class="input-group mb-2 w-75">
-									<div class="input-group-prepend w-25">
-										<span class="input-group-text w-100 justify-content-center">End:</span>
-									</div>
-									<input type="date" name="custom_end" class="form-control" required>
-								</div>
-							</div>
-						
-							<!-- Modal footer -->
-							<div class="modal-footer">
-							<input type="submit" class="btn btn-info" name="customize_period" value="OK">
-							<button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
+  </script>
 
 </body>
 </html>
