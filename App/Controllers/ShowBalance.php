@@ -45,29 +45,8 @@ class ShowBalance extends Authenticated
 			$_SESSION['custom_end'] = $balance->custom_end;
 		}
 
-		if(isset($_SESSION['period']) || ((isset($_SESSION['custom_start']) && (isset($_SESSION['custom_end'])))))
-		{
-			if (!$balance->getIncomesGroupedByCategories() || !$balance->getIncomeTotalAmount())
-			{
-				//Flash::addMessage('You have no incomes in selected period of time');
-				echo "You have no incomes in selected period of time";
-				View::renderTemplate('ShowBalance/index.html');
-			}
-		
-			if (!$balance->getExpensesGroupedByCategories() || !$balance->getExpenseTotalAmount())
-			{
-				//Flash::addMessage('You have no expenses in selected period of time');
-				echo "You have no expenses in selected period of time";
-				View::renderTemplate('ShowBalance/index.html');
-			}
-		
-		else 
-		{
-			View::renderTemplate('ShowBalance/index.html');
-		}
-		
+		View::renderTemplate('ShowBalance/index.html');
+			
 		$balance->unsetAllSessionVariable();
-		
-		}
     }
 }
