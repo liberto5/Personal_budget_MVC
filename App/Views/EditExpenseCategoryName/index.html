@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to Personal Budget{% endblock %}
+
+{% block footer %}
+
+	<script>
+		$.validator.addMethod('validName',
+            function(value, element, param) 
+			{
+                if (value != '') {
+                    if (value.match(/^[\w.]+$/i) == null) 
+					{
+                        return false;
+                    }
+                }
+                return true;
+            },
+            'Name has to consist only of alphanumeric characters'
+        );
+		$(document).ready(function()
+		{
+			$('#formChangeCategoryName').validate({
+                rules: {
+                    newNameInput: {
+						rangelength: [3, 25],
+						validName: true
+					}
+                },
+				messages: {
+                    newNameInput: {
+                        rangelength: 'Name has to consist of 3 to 20 characters'
+                    }
+				}
+            });
+        });
+	</script>
+
+{% endblock %}
+
+{% block body %}	
+
+<div class="container bg-white text-center col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4 mt-sm-5 p-1 p-sm-3 shadow">
+	<a id="logo" href="/"><h1>Personal Budget</h1>
+	<p class="heading">Take control of your finances</p></a>
+				
+	<h4>Edit expense's category name</h4>
+	
+	{% for message in flash_messages %}
+		<div id="settingsChanges">
+			{{ message }}
+		</div>
+	{% endfor %}
+
+	<form method="post" action="/EditExpenseCategoryName/editName" id="formChangeCategoryName">
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-50">
+				<span class="input-group-text w-100 justify-content-center">New category name</span>
+			</div>
+			<input type="text" class="form-control" value="{{ user.category }}" name="changeNameInput" />									
+		</div>
+		<div>	
+		{% if user.error_name is not empty %}
+			{% for error in user.error_name %}
+				<li>{{ error }}</li>
+			{% endfor %}
+		{% endif %}
+		</div>
+		<button type="submit" class="btn btn-primary mr-2 mt-0 btn-sm" style="width:180px;">Save new category name</button>
+	</form>
+		
+	<div class="w-100 mt-2">
+		<a href="/MainMenu/index"><button type="button" class="btn btn-primary mr-2 mt-0" style="width:180px;">Back to main menu</button></a>
+	</div>
+	
+</div>
+
+{% endblock %}

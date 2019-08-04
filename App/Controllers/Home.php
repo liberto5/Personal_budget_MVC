@@ -22,7 +22,7 @@ class Home extends \Core\Controller
     {
         if (Auth::getUser())
 		{
-			$this->redirect('/mainmenu/index');
+			$this->redirect('/MainMenu/index');
 		}
 		
 		else

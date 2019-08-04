@@ -39,7 +39,7 @@ class Login extends \Core\Controller
 			
 			else
 			{
-				$this->redirect('/mainmenu/index');
+				$this->redirect('/MainMenu/index');
 			}
 
         } 

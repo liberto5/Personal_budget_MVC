@@ -24,4 +24,17 @@ class Account extends \Core\Controller
     header('Content-Type: application/json');
     echo json_encode($is_valid);
   }
+  
+    /**
+   * Validate if email is available (AJAX) for a change.
+   *
+   * @return void
+   */
+  public function validateNewEmailAction()
+  {
+    $is_valid = ! User::emailExists($_GET['changeEmailInput']);
+
+    header('Content-Type: application/json');
+    echo json_encode($is_valid);
+  }
 }
