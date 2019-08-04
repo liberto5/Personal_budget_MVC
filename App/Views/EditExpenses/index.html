@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Expenses{% endblock %}
+
+{% block footer %}
+
+	<script>
+		$.validator.addMethod('validName',
+            function(value, element, param) 
+			{
+                if (value != '') {
+                    if (value.match(/^[\w.]+$/i) == null) 
+					{
+                        return false;
+                    }
+                }
+                return true;
+            },
+            'Name has to consist only of alphanumeric characters'
+        );
+		$(document).ready(function()
+		{
+			$('#formAddExpenseCategory').validate({
+                rules: {
+                    newNameInput: {
+						rangelength: [3, 25],
+						validName: true
+					}
+                },
+				messages: {
+                    newNameInput: {
+                        rangelength: 'Name has to consist of 3 to 25 characters'
+                    }
+				}
+            });
+        });
+	</script>
+
+{% endblock %}
+
+{% block body %}	
+
+<div class="container bg-white text-center col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4 mt-sm-5 p-1 p-sm-3 shadow">
+	<a id="logo" href="/"><h1>Personal Budget</h1>
+	<p class="heading">Take control of your finances</p></a>
+				
+	<h4>Edit expenses categories</h4>
+
+	<form method="post" action="/EditExpenses/editCategory" id="formEditExpenses">
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-50">
+				<span class="input-group-text w-100 justify-content-center">Select category</span>
+			</div>
+			<div class="dropdown flex-grow-1">
+				<select class="dropdown h-100 w-100" name="category">
+					{% for name in expenses_categories %}
+						<option>{{ expenses_categories[loop.index0].name }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+		
+		<div class="w-100">
+			<button type="submit" class="btn btn-primary mr-2 mt-0 btn-sm" name="edit_button">Edit</button>
+			<button type="submit" class="btn btn-primary mr-2 mt-0 btn-sm" name="remove_button">Remove</button>
+		</div>
+	</form>
+	
+	<div>
+	{% if user.error_category_remove is not empty %}
+		<script>   
+		
+			$(window).on('load',function()
+			{
+				$('#myModal').modal('show');
+			});
+			
+		</script>
+	{% endif %}
+	</div>
+	
+	<div class="modal fade" id="myModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form method="post" action="/EditExpenses/removeCategory">
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<div class="modal-title">{% for error in user.error_category_remove %}
+													{{ error }}
+												{% endfor %}</div>
+						
+					</div>
+					
+					<div class="modal-footer">
+					<input type="submit" class="btn btn-primary" value="Yes">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<form method="post" action="/EditExpenses/addCategory" id="formAddExpenseCategory">
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-50">
+				<span class="input-group-text w-100 justify-content-center">New category name</span>
+			</div>
+			<input type="text" class="form-control" name="changeNameInput" value="{{ user.newNameInput }}" />									
+		</div>
+		
+		<div id="name-error">	
+			{% if user.error_name is not empty %}
+				{% for error in user.error_name %}
+					{{ error }}
+				{% endfor %}
+			{% endif %}
+		</div>
+		
+		<div class="w-100">
+			<button type="submit" class="btn btn-primary mr-2 mt-0 btn-sm">Add category</button>
+		</div>
+	</form>
+	
+	<div class="w-100 mt-2">
+		<a href="/MainMenu/index"><button type="button" class="btn btn-primary mr-2 mt-0" style="width:180px;">Back to main menu</button></a>
+	</div>
+	
+</div>
+
+{% endblock %}

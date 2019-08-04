@@ -38,7 +38,7 @@ class AddExpense extends Authenticated
 		{
 			Flash::addMessage('Expense added successfully');
 			
-			$this->redirect('/mainmenu/index');
+			$this->redirect('/MainMenu/index');
 		}
 
         else 

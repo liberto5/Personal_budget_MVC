@@ -4,6 +4,7 @@ namespace App\Models;
 
 use PDO;
 use \App\Token;
+use \App\Models\FinancialOperation;
 
 /**
  * User model
@@ -21,6 +22,7 @@ class User extends \Core\Model
     public $error_name = [];
     public $error_email = [];
     public $error_password = [];
+    public $error_category_remove = [];
 
     /**
      * Class constructor
@@ -31,7 +33,7 @@ class User extends \Core\Model
      */
     public function __construct($data = [])
     {
-        foreach ($data as $key => $value) 
+        foreach ($data as $key => $value)
 		{
             $this->$key = $value;
         };
@@ -69,7 +71,7 @@ class User extends \Core\Model
     /**
      * Set default values of categories of payment methods to new user
      *
-     * @return boolean  True if set successfully, false otherwise
+     * @return boolean True if set successfully, false otherwise
      */
 	public function setDefaultPaymentMethodsToUser()
 	{
@@ -209,7 +211,7 @@ class User extends \Core\Model
     }
 	
 	/**
-     * Find a user model by email address
+     * Find a user by email address
      *
      * @param string $email email address to search for
      *
@@ -230,6 +232,11 @@ class User extends \Core\Model
         return $stmt->fetch();
     }
 	
+	/**
+     * Authenticate if login and password of user are correct
+     *
+     * @return mixed User object if found, false otherwise
+     */
 	public static function authenticate($email, $password)
     {
         $user = static::findByEmail($email);
@@ -244,7 +251,7 @@ class User extends \Core\Model
     }
 	
 	/**
-     * Find a user model by ID
+     * Find a user by ID
      *
      * @param string $id The user ID
      *
@@ -291,4 +298,748 @@ class User extends \Core\Model
 
         return $stmt->execute();
     }
+	
+	/**
+     * Change the name of logged in user
+     *
+     * @return boolean True if the name was changed successfully, false otherwise
+     */
+	public function changeUserName()
+	{
+		$this->validateName();
+		
+		if (empty($this->error_name)) 
+		{
+			$sql = 'UPDATE users SET username = :username WHERE id = :user_id';
+
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':username', $this->changeNameInput, PDO::PARAM_STR);
+			$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+		
+		return false;
+	}
+	
+	/**
+     * Validate category's name, adding valiation error messages to the errors array property
+     *
+     * @return void
+     */
+    public function validateName()
+    {
+	   	if ((strlen($this->changeNameInput)<3) || (strlen($this->changeNameInput)>20))
+		{
+			$this->error_name[] = "Name has to consist of 3 to 20 characters";
+		}
+		
+		if (ctype_alnum($this->changeNameInput) == false)
+		{
+			$this->error_name[] = "Name has to consist only of alphanumeric characters";
+		}
+	}
+	
+	/**
+     * Change the email of logged in user
+     *
+     * @return boolean True if the email was changed successfully, false otherwise
+     */
+	public function changeUserEmail()
+	{
+		$this->validateEmail();
+		
+		if (empty($this->error_email)) 
+		{
+			$sql = 'UPDATE users SET email = :email WHERE id = :user_id';
+
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':email', $this->changeEmailInput, PDO::PARAM_STR);
+			$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+		
+		return false;
+	}
+	
+	/**
+     * Validate new user's email, adding valiation error messages to the errors array property
+     *
+     * @return void
+     */
+    public function validateEmail()
+    {
+		$emailB = filter_var($this->changeEmailInput, FILTER_SANITIZE_EMAIL);
+		if ((filter_var($emailB, FILTER_VALIDATE_EMAIL) === false) || ($emailB != $this->changeEmailInput))
+		{
+			$this->error_email[] = "Enter the correct e-mail address";
+		}
+		
+		if (static::emailExists($this->changeEmailInput)) 
+		{
+            $this->error_email[] = 'E-mail is already taken';
+        }
+	}
+	
+	/**
+     * Check if the password is correct before changing it into new one
+     *
+     * @return boolean True if the email was changed successfully, false otherwise
+     */
+	public function checkPassword()
+	{
+		$currentPassword = $this->currentPasswordInput;
+		
+		$user = static::findByID($_SESSION['user_id']);
+		
+		if ($user) {
+            if (password_verify($currentPassword, $user->password)) {
+                return true;
+            }
+        }
+
+        return false;
+	}
+	
+	/**
+     * Change the password of logged in user
+     *
+     * @return boolean True if the email was changed successfully, false otherwise
+     */
+	public function changeUserPassword()
+	{
+		$this->validatePassword();
+		
+		if (empty($this->error_password)) 
+		{
+			$password_hash = password_hash($this->newPasswordInput1, PASSWORD_DEFAULT);
+			
+			$sql = 'UPDATE users SET password = :password WHERE id = :user_id';
+
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':password', $password_hash, PDO::PARAM_STR);
+			$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+		
+		return false;
+	}
+	
+	/**
+     * Validate new user's password, adding valiation error messages to the errors array property
+     *
+     * @return void
+     */
+    public function validatePassword()
+    {
+		if ((strlen($this->newPasswordInput1) < 8) || (strlen($this->newPasswordInput1) > 20))
+		{
+			$this->error_password[] = "Password has to consist of 8 to 20 characters";
+		}
+		
+		if ($this->newPasswordInput1 != $this->newPasswordInput2)
+		{
+			$this->error_password[] = "Passwords are not the same";
+		}
+	}
+	
+	/**
+     * Edit the name of the category of incomes
+     *
+     * @return void
+     */
+    public function editIncomeCategoryName($user)
+    {
+		$this->validateName();
+		
+		if (empty($this->error_name)) 
+		{
+			$sql = 'UPDATE incomes_category_assigned_to_users SET name = :name WHERE user_id = :user_id AND name = :oldName';
+
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':name', $this->changeNameInput, PDO::PARAM_STR);
+			$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+			$stmt->bindValue(':oldName', $_SESSION['category'], PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+		
+		return false;
+	}
+	
+	/**
+     * Edit the name of the category of expenses
+     *
+     * @return void
+     */
+    public function editExpenseCategoryName()
+    {
+		$this->validateName();
+		
+		if (empty($this->error_name)) 
+		{
+			$sql = 'UPDATE expenses_category_assigned_to_users SET name = :name WHERE user_id = :user_id AND name = :oldName';
+
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':name', $this->changeNameInput, PDO::PARAM_STR);
+			$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_STR);
+			$stmt->bindValue(':oldName', $_SESSION['category'], PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+		
+		return false;
+	}
+	
+	/**
+     * Remove existing category of incomes
+     *
+     * @return void
+     */
+    public function removeIncomeCategory()
+    {
+		$sql = 'DELETE FROM incomes_category_assigned_to_users WHERE user_id = :user_id AND name = :name';
+
+		$db = static::getDB();
+		$stmt = $db->prepare($sql);
+
+		$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_STR);
+		$stmt->bindValue(':name', $_SESSION['category'], PDO::PARAM_STR);
+
+		return $stmt->execute();
+	}
+	
+	/**
+     * Remove existing category of expenses
+     *
+     * @return void
+     */
+    public function removeExpenseCategory()
+    {
+		$sql = 'DELETE FROM expenses_category_assigned_to_users WHERE user_id = :user_id AND name = :name';
+
+		$db = static::getDB();
+		$stmt = $db->prepare($sql);
+
+		$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_STR);
+		$stmt->bindValue(':name', $_SESSION['category'], PDO::PARAM_STR);
+
+		return $stmt->execute();
+	}
+	
+	/**
+     * Add new name of the category of incomes
+     *
+     * @return void
+     */
+    public function addIncomeCategory()
+    {
+		$this->checkIfIncomeCategoryExistsAlready();
+		
+		$this->validateName();
+		
+		if (empty($this->error_name)) 
+		{
+			$sql = 'INSERT INTO incomes_category_assigned_to_users (user_id, name) VALUES (:user_id, :name)';
+
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_STR);
+			$stmt->bindValue(':name', $this->changeNameInput, PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+		
+		return false;
+	}
+	
+	/**
+     * Add new name of the category of expenses
+     *
+     * @return void
+     */
+    public function addExpenseCategory()
+    {
+		$this->checkIfExpenseCategoryExistsAlready();
+		
+		$this->validateName();
+		
+		if (empty($this->error_name)) 
+		{
+			$sql = 'INSERT INTO expenses_category_assigned_to_users (user_id, name) VALUES (:user_id, :name)';
+
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_STR);
+			$stmt->bindValue(':name', $this->changeNameInput, PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+		
+		return false;
+	}
+	
+	/**
+     * Check, if category name, that user is trying to add, doesn't exist yet
+     *
+     * @return void
+     */
+    public function checkIfIncomeCategoryExistsAlready()
+    {
+	   	$name = $this->changeNameInput;
+		
+		$namesFromDatabase = static::getIncomesCategoriesToCheckName();
+		
+		foreach($namesFromDatabase as $result) 
+		{
+		   if (strcasecmp($name, $result['name']) == 0) 
+			{
+				$this->error_name[] = "Category name already exists. Choose another one";
+				break;
+			};
+		}
+	}
+	
+	/**
+     * Check, if category name, that user is trying to add, doesn't exist yet
+     *
+     * @return void
+     */
+    public function checkIfExpenseCategoryExistsAlready()
+    {
+	   	$name = $this->changeNameInput;
+		
+		$namesFromDatabase = static::getExpensesCategoriesToCheckName();
+		
+		foreach($namesFromDatabase as $result) 
+		{
+		   if (strcasecmp($name, $result['name']) == 0) 
+			{
+				$this->error_name[] = "Category name already exists. Choose another one";
+				break;
+			};
+		}
+	}
+	
+	/**
+     * Get categories of incomes from database and send them as an array
+     *
+     * @return array with categories
+     */	
+	public static function getIncomesCategoriesToCheckName()
+	{
+		if (isset($_SESSION['user_id']))
+		{
+			$user_id = $_SESSION['user_id'];
+		
+			$sql = "SELECT name FROM incomes_category_assigned_to_users WHERE user_id = :user_id";
+
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+			
+			$stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+
+			$stmt->execute();
+			
+			return $stmt->fetchAll();
+		}
+	}
+	
+	/**
+     * Get categories of expenses from database and send them as an array
+     *
+     * @return array with categories
+     */	
+	public static function getExpensesCategoriesToCheckName()
+	{
+		if (isset($_SESSION['user_id']))
+		{
+			$user_id = $_SESSION['user_id'];
+		
+			$sql = "SELECT name FROM expenses_category_assigned_to_users WHERE user_id = :user_id";
+
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+			
+			$stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+
+			$stmt->execute();
+			
+			return $stmt->fetchAll();
+		}
+	}
+	
+	/**
+     * Check if any income is already assigned to removing category
+     *
+     * @return mixed User object if found, false otherwise
+     */
+    public function isIncomeCategoryEmpty()
+    {
+        $user_id = $_SESSION['user_id'];
+		$category_id = $this->getIncomeId();
+		
+		$sql = 'SELECT * FROM incomes WHERE user_id = :user_id AND income_category_assigned_to_user_id = :category_id';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_STR);
+        $stmt->bindParam(':category_id', $category_id, PDO::PARAM_STR);
+		
+		$stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+        if ($stmt->fetch())
+		{
+			$this->error_category_remove[] = "To this category some financial operations have been assigned. Do you really want to remove it and transfer all operations from this category to \"Another\"?";
+			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+    }
+	
+	/**
+     * Check if any expense is already assigned to removing category
+     *
+     * @return mixed User object if found, false otherwise
+     */
+    public function isExpenseCategoryEmpty()
+    {
+        $user_id = $_SESSION['user_id'];
+		$category_id = $this->getExpenseId();
+		
+		$sql = 'SELECT * FROM expenses WHERE user_id = :user_id AND expense_category_assigned_to_user_id = :category_id';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_STR);
+        $stmt->bindParam(':category_id', $category_id, PDO::PARAM_STR);
+		
+		$stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+        if ($stmt->fetch())
+		{
+			$this->error_category_remove[] = "To this category some financial operations have been assigned. Do you really want to remove it and transfer all operations from this category to \"Another\"?";
+			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+    }
+	
+	/**
+     * Get the income category id from database
+     *
+     * @return integer with id of income category
+     */
+	public function getIncomeId()
+	{
+		$user_id = $_SESSION['user_id'];
+		$income_category = $_SESSION['category'];
+		
+		$sql = 'SELECT id FROM incomes_category_assigned_to_users WHERE user_id = :id AND name = :name';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':id', $user_id, PDO::PARAM_INT);
+        $stmt->bindValue(':name', $income_category, PDO::PARAM_STR);
+		
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+		
+		$row = $stmt->fetch();
+		
+		return $row->id;
+	}
+	
+	/**
+     * Get the expense category id from database
+     *
+     * @return integer with id of expense category
+     */
+	public function getExpenseId()
+	{
+		$user_id = $_SESSION['user_id'];
+		$income_category = $_SESSION['category'];
+		
+		$sql = 'SELECT id FROM expenses_category_assigned_to_users WHERE user_id = :id AND name = :name';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':id', $user_id, PDO::PARAM_INT);
+        $stmt->bindValue(':name', $income_category, PDO::PARAM_STR);
+		
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+		
+		$row = $stmt->fetch();
+		
+		return $row->id;
+	}
+	
+	/**
+     * Check if Another category of incomes exists, 
+	 * if so, transfer incomes, if not, create it and then transfer incomes
+     *
+     * @return void
+     */
+	public function prepareToTransferIncomesToAnotherCategory()
+	{
+		if($this->checkIfAnotherIncomesCategoryExists())
+		{
+			$this->transferIncomesToAnotherCategory();
+			
+			return true;
+		}
+		else
+		{
+			$this->createAnotherIncomesCategory();
+			
+			$this->transferIncomesToAnotherCategory();
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+     * Check if Another category of expenses exists, 
+	 * if so, transfer expenses, if not, create it and then transfer expenses
+     *
+     * @return void
+     */
+	public function prepareToTransferExpensesToAnotherCategory()
+	{
+		if($this->checkIfAnotherExpensesCategoryExists())
+		{
+			$this->transferExpensesToAnotherCategory();
+			
+			return true;
+		}
+		else
+		{
+			$this->createAnotherExpensesCategory();
+			
+			$this->transferExpensesToAnotherCategory();
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+     * Check if "Another" category exists to transfer incomes there
+     *
+     * @return void
+     */
+	public function checkIfAnotherIncomesCategoryExists()
+	{
+        $user_id = $_SESSION['user_id'];
+		$income_category = "Another";
+		
+		$sql = 'SELECT * FROM incomes_category_assigned_to_users WHERE user_id = :user_id AND name = :name';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':name', $income_category, PDO::PARAM_STR);
+		
+		$stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+        return $stmt->fetch();
+	}
+	
+	/**
+     * Check if "Another" category exists to transfer expenses there
+     *
+     * @return void
+     */
+	public function checkIfAnotherExpensesCategoryExists()
+	{
+        $user_id = $_SESSION['user_id'];
+		$income_category = "Another";
+		
+		$sql = 'SELECT * FROM expenses_category_assigned_to_users WHERE user_id = :user_id AND name = :name';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':name', $income_category, PDO::PARAM_STR);
+		
+		$stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+        return $stmt->fetch();
+	}
+	
+	/**
+     * Create "Another" income category
+     *
+     * @return void
+     */
+	public function createAnotherIncomesCategory()
+	{
+        $user_id = $_SESSION['user_id'];
+		$income_category = "Another";
+		
+		$sql = "INSERT INTO incomes_category_assigned_to_users (user_id, name) VALUES (:user_id, :name)";
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindValue(':name', $income_category, PDO::PARAM_STR);
+
+        return $stmt->execute();
+	}
+	
+	/**
+     * Create "Another" expense category
+     *
+     * @return void
+     */
+	public function createAnotherExpensesCategory()
+	{
+        $user_id = $_SESSION['user_id'];
+		$expense_category = "Another";
+		
+		$sql = "INSERT INTO expenses_category_assigned_to_users (user_id, name) VALUES (:user_id, :name)";
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindValue(':name', $expense_category, PDO::PARAM_STR);
+
+        return $stmt->execute();
+	}
+	
+	/**
+     * Transfer incomes from removed category to "Another"
+     *
+     * @return void
+     */
+	public function transferIncomesToAnotherCategory()
+	{
+		$user_id = $_SESSION['user_id'];
+		$oldIncomeCategory = $this->getIncomeId();
+		$AnotherCategoryId = $this->getAnotherIncomeCategoryId();
+		
+		$sql = 'UPDATE incomes SET income_category_assigned_to_user_id = :income_category_assigned_to_user_id WHERE user_id = :user_id AND income_category_assigned_to_user_id = :old_income_category_assigned_to_user_id';
+
+		$db = static::getDB();
+		$stmt = $db->prepare($sql);
+
+		$stmt->bindValue(':income_category_assigned_to_user_id', $AnotherCategoryId, PDO::PARAM_INT);
+		$stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+		$stmt->bindValue(':old_income_category_assigned_to_user_id', $oldIncomeCategory, PDO::PARAM_INT);
+
+		return $stmt->execute();
+		
+	}
+	
+	/**
+     * Transfer expenses from removed category to "Another"
+     *
+     * @return void
+     */
+	public function transferExpensesToAnotherCategory()
+	{
+		$user_id = $_SESSION['user_id'];
+		$oldExpenseCategory = $this->getExpenseId();
+		$AnotherCategoryId = $this->getAnotherExpenseCategoryId();
+		
+		$sql = 'UPDATE expenses SET expense_category_assigned_to_user_id = :expense_category_assigned_to_user_id WHERE user_id = :user_id AND expense_category_assigned_to_user_id = :old_expense_category_assigned_to_user_id';
+
+		$db = static::getDB();
+		$stmt = $db->prepare($sql);
+
+		$stmt->bindValue(':expense_category_assigned_to_user_id', $AnotherCategoryId, PDO::PARAM_INT);
+		$stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+		$stmt->bindValue(':old_expense_category_assigned_to_user_id', $oldExpenseCategory, PDO::PARAM_INT);
+
+		return $stmt->execute();
+		
+	}
+	
+	/**
+     * Get "Another" category id
+     *
+     * @return integer with income id
+     */
+	public function getAnotherIncomeCategoryId()
+	{
+        $user_id = $_SESSION['user_id'];
+		$income_category = "Another";
+		
+		$sql = 'SELECT id FROM incomes_category_assigned_to_users WHERE user_id = :user_id AND name = :name';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':name', $income_category, PDO::PARAM_STR);
+		
+		$stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+		$row = $stmt->fetch();
+		
+		return $row->id;
+	}
+	
+	/**
+     * Get "Another" category id
+     *
+     * @return integer with expense id
+     */
+	public function getAnotherExpenseCategoryId()
+	{
+        $user_id = $_SESSION['user_id'];
+		$income_category = "Another";
+		
+		$sql = 'SELECT id FROM expenses_category_assigned_to_users WHERE user_id = :user_id AND name = :name';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':name', $income_category, PDO::PARAM_STR);
+		
+		$stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+		$row = $stmt->fetch();
+		
+		return $row->id;
+	}
+	
+
 }

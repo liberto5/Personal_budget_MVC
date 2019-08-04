@@ -70,25 +70,34 @@ a:active
 	color: #200000;
 }
 
-#addingOperationMessage,
+#addingOperationMessage
 {
 	color: #1804fe;
 	font-style: italic;
 	vertical-align: middle;
 }
 
-#amount-error,
-#dates-error,
-#comment-error
+#changeNameInput-error,
+#changeEmailInput-error,
+#newEmailInput1-error,
+#newEmailInput2-error,
+#newPasswordInput1-error,
+#newPasswordInput2-error,
+#newNameInput-error,
+#name-error,
+#email-error
 {
 	margin-left: auto;
     margin-right: auto;
+	margin-top: 5px;
+	margin-bottom: 5px;
 	font-style: italic;
 	color: red;
 }
 
 .noOperationsInTime,
-#logoutMessage
+#logoutMessage,
+#settingsChanges
 {
 	color: #1804fe;
 	font-style: italic;

@@ -41,8 +41,17 @@
                     }
                 },
                 messages: {
+					name: {
+						rangelength: 'Name has to consist of 3 to 20 characters'
+					},
                     email: {
                         remote: 'E-mail is already taken'
+                    },
+					password: {
+						rangelength: 'Password has to consist of 8 to 20 characters'
+                    },
+					passwordConfirm: {
+                        equalTo: 'Passwords have to be the same'
                     }
                 }
             });

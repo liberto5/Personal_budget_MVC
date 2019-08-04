@@ -38,7 +38,7 @@ class AddIncome extends Authenticated
 		{
 			Flash::addMessage('Income added successfully');
 			
-			$this->redirect('/mainmenu/index');
+			$this->redirect('/MainMenu/index');
 		}
 
         else 
