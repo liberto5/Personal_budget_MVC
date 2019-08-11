@@ -55,6 +55,10 @@ class View
 			$twig->addGlobal('payment_methods', \App\PaymentMethods::getUserPaymentMethods());
 			$twig->addGlobal('incomes_by_categories', \App\IncomesByCategories::getIncomesByCategories());
 			$twig->addGlobal('expenses_by_categories', \App\ExpensesByCategories::getExpensesByCategories());
+			$twig->addGlobal('single_incomes_from_category', \App\IncomesByCategories::getSingleIncomesFromCategory());
+			$twig->addGlobal('single_expenses_from_category', \App\ExpensesByCategories::getSingleExpensesFromCategory());
+			$twig->addGlobal('single_income_details', \App\SingleIncomeDetails::getIncomeDetails());
+			$twig->addGlobal('single_expense_details', \App\SingleExpenseDetails::getExpenseDetails());
 			$twig->addGlobal('total_income', \App\IncomeTotal::getTotalUserIncome());
 			$twig->addGlobal('total_expense', \App\ExpenseTotal::getTotalUserExpense());
         }

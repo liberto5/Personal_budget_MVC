@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Expenses{% endblock %}
+
+{% block body %}	
+
+<div class="container bg-white text-center col-12 col-lg-10 col-xl-8 mt-lg-5 p-1 p-lg-3 shadow">
+	<a id="logo" href="/"><h1>Personal Budget</h1>
+	<p class="heading">Take control of your finances</p></a>
+
+	<fieldset>
+	
+		<legend class="border" id="title"> Your expenses </legend>
+	  
+		<div class="d-md-flex justify-content-around" style="width=100%;" id="divWithTable">
+			<table class="table table-striped m-2" id="table" style="width:100%;">
+				<col width="5%">
+				<col width="20%">
+				<col width="15%">
+				<col width="15%">
+				<col width="18%">
+				<col width="27%">
+				<thead>
+					<tr>
+						<th>Edit</th>
+						<th>Name</th>
+						<th>Amount</th>
+						<th>Payment by</th>
+						<th>Date</th>
+						<th>Comment</th>
+					</tr>
+				</thead>
+				<tbody>
+					<form id= "editSingleExpense" method="post" action="/EditExpenseForm/index">
+					{% for name, amount, payment, date, comment in single_expenses_from_category %}
+						<tr>
+							<td><input onclick="document.getElementById('editSingleExpense').submit();" type="radio" name="expense" value="{{ single_expenses_from_category[loop.index0].id }}"></td> 
+							<td> {{ single_expenses_from_category[loop.index0].name }} </td>
+							<td> {{ single_expenses_from_category[loop.index0].amount }} </td>
+							<td> {{ single_expenses_from_category[loop.index0].payment }} </td>
+							<td> {{ single_expenses_from_category[loop.index0].date }} </td>
+							<td> {{ single_expenses_from_category[loop.index0].comment }} </td>
+						</tr>
+					{% endfor %}
+					</form>
+				</tbody>
+			</table>			
+		</div>	
+	</fieldset>
+	
+	<a href="/ShowBalance/index"><button type="button" class="btn btn-primary">Back to balance</button></a>
+	
+</div>
+
+{% endblock %}

@@ -15,4 +15,8 @@ class IncomesByCategories
     {
 		return Balance::getIncomesGroupedByCategories();
     }
+	public static function getSingleIncomesFromCategory()
+    {
+		return Balance::getSingleIncomesFromCategory();
+    }
 }

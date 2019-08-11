@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Expense in Personal Budget{% endblock %}
+
+{% block footer %}
+
+	<script>
+		$(document).ready(function()
+		{
+			$('#editAddIncome').validate({
+                rules: {
+                    amount: {
+						required: true,
+						min: 0
+					},
+                    dates: {
+                        required: true,
+                        date: true
+                    },
+                    comment: {
+						rangelength: [0, 100]
+                    }
+                },
+                messages: {
+                    amount: "Amount has to be a positive number with \"\.\" as a separator",
+					dates: "Please enter the correct date in the \"dd.mm.yyyy\" format",
+					comment: "The comment can be at maximum 100 characters long"
+                }
+            });
+        });
+	</script>
+
+{% endblock %}
+
+{% block body %}	
+
+<div class="container bg-white text-center col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4 mt-sm-5 p-1 p-sm-3 shadow">
+	<a id="logo" href="/"><h1>Personal Budget</h1>
+	<p class="heading">Take control of your finances</p></a>
+				
+	<h4>Add details of expense</h4>
+
+	<form method="post" action="/EditExpenseForm/update" id="editAddExpense">
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-25">
+				<span class="input-group-text w-100 justify-content-center">Amount</span>
+			</div>
+			<input type="text" class="form-control" placeholder="0.00" value="{{ single_expense_details[0].amount }}" name="amount" />				
+		</div>
+		
+		<div>	
+			{% if financialOperation.error_amount is not empty %}
+				{% for error in financialOperation.error_amount %}
+					{{ error }}
+				{% endfor %}
+			{% endif %}
+		</div>
+		
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-25">
+				<span class="input-group-text w-100 justify-content-center">Date</span>
+			</div>
+			<input type="date" class="form-control" value="{{ single_expense_details[0].date }}" name="dates" />		
+		</div>
+		
+		<div>
+			{% if financialOperation.error_date is not empty %}
+				{% for error in financialOperation.error_date %}
+					<li>{{ error }}</li>
+				{% endfor %}
+			{% endif %}
+		</div>
+		
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-25">
+				<span class="input-group-text w-100 justify-content-center">Category</span>
+			</div>
+			<div class="dropdown flex-grow-1">
+				<select class="dropdown h-100 w-100" name="category">
+					{% for name in expenses_categories %}
+						<option>{{ expenses_categories[loop.index0].name }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+		
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-25">
+				<span class="input-group-text w-100 justify-content-center">Payment by</span>
+			</div>
+			<div class="dropdown flex-grow-1">
+				<select class="dropdown h-100 w-100" name="payment">
+					{% for name in payment_methods %}
+						<option>{{ payment_methods[loop.index0].name }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+		
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-25">
+				<span class="input-group-text w-100 justify-content-center">Comment</span>
+			</div>
+			<textarea class="form-control" name="comment" />{{ single_expense_details[0].comment }}</textarea>
+		</div>
+		
+		<div>
+			{% if financialOperation.error_comment is not empty %}
+				{% for error in financialOperation.error_comment %}
+					<li>{{ error }}</li>
+				{% endfor %}
+			{% endif %}
+		</div>
+		
+		<div class="w-100 mt-2">
+			<button type="submit" class="btn btn-primary mr-2" name="save_button">Save</button>
+			<button type="submit" class="btn btn-primary mr-2" name="remove_button">Remove</button>
+			<a href="/ShowBalance/index"><button type="button" class="btn btn-primary">Cancel</button></a>
+		</div>
+	</form>
+	
+</div>
+
+{% endblock %}

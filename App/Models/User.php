@@ -1041,5 +1041,4 @@ class User extends \Core\Model
 		return $row->id;
 	}
 	
-
 }

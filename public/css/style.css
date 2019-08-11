@@ -85,6 +85,8 @@ a:active
 #newPasswordInput2-error,
 #newNameInput-error,
 #name-error,
+#amount-error,
+#comment-error,
 #email-error
 {
 	margin-left: auto;
@@ -102,4 +104,16 @@ a:active
 	color: #1804fe;
 	font-style: italic;
 	margin: 10px 5px 10px 5px;
+}
+
+#divWithTable
+
+{
+	font-size: 2.2vmin;
+	
+}
+
+#title
+{
+	font-size: 3.5vmin;
 }

@@ -15,4 +15,8 @@ class ExpensesByCategories
     {
 		return Balance::getExpensesGroupedByCategories();
     }
+	public static function getSingleExpensesFromCategory()
+    {
+		return Balance::getSingleExpensesFromCategory();
+    } 
 }

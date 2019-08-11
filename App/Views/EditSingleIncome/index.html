@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Incomes{% endblock %}
+
+{% block body %}	
+
+<div class="container bg-white text-center col-12 col-lg-10 col-xl-8 mt-lg-5 p-1 p-lg-3 shadow">
+	<a id="logo" href="/"><h1>Personal Budget</h1>
+	<p class="heading">Take control of your finances</p></a>
+
+	<fieldset>
+	
+		<legend class="border" id="title"> Your incomes </legend>
+	  
+		<div class="d-md-flex justify-content-around" style="width=100%;" id="divWithTable">
+			<table class="table table-striped m-2" id="table" style="width:100%;">
+				<col width="5%">
+				<col width="22%">
+				<col width="15%">
+				<col width="20%">
+				<col width="38%">
+				<thead>
+					<tr>
+						<th>Edit</th>
+						<th>Name</th>
+						<th>Amount</th>
+						<th>Date</th>
+						<th>Comment</th>
+					</tr>
+				</thead>
+				<tbody>
+					<form id= "editSingleIncome" method="post" action="/EditIncomeForm/index">
+					{% for name, amount, date, comment in single_incomes_from_category %}
+						<tr>
+							<td><input onclick="document.getElementById('editSingleIncome').submit();" type="radio" name="income" value="{{ single_incomes_from_category[loop.index0].id }}"></td> 
+							<td> {{ single_incomes_from_category[loop.index0].name }} </td>
+							<td> {{ single_incomes_from_category[loop.index0].amount }} </td>
+							<td> {{ single_incomes_from_category[loop.index0].date }} </td>
+							<td> {{ single_incomes_from_category[loop.index0].comment }} </td>
+						</tr>
+					{% endfor %}
+					</form>
+				</tbody>
+			</table>			
+		</div>	
+	</fieldset>
+	
+	<a href="/ShowBalance/index"><button type="button" class="btn btn-primary">Back to balance</button></a>
+	
+</div>
+
+{% endblock %}
