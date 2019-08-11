@@ -37,16 +37,23 @@ class ShowBalance extends Authenticated
 		if(isset($balance->periodsOptions))
 		{
 			$_SESSION['period'] = $balance->periodsOptions;
+			if (isset($_SESSION['custom_start']) && isset($_SESSION['custom_end']))
+			{
+				unset($_SESSION['custom_start']);
+				unset($_SESSION['custom_end']);
+			}
 		}
 		
 		else if (isset($balance->custom_start) && isset($balance->custom_end))
 		{
 			$_SESSION['custom_start'] = $balance->custom_start;
 			$_SESSION['custom_end'] = $balance->custom_end;
+			if (isset($_SESSION['period']))
+			{
+				unset($_SESSION['period']);
+			}
 		}
 
 		View::renderTemplate('ShowBalance/index.html');
-			
-		$balance->unsetAllSessionVariable();
     }
 }

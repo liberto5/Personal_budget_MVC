@@ -280,4 +280,104 @@ class FinancialOperation extends \Core\Model
 		
 		return $row->id;
 	}
+	
+    /**
+     * Save the income with the current property values
+     *
+     * @return boolean  True if the operation was saved, false otherwise
+     */
+	public function updateIncome()
+	{
+		$this->validate();
+		
+		$income_category_id = $this->getIncomeId();
+		
+		if (empty($this->error_amount) && empty($this->error_comment) && ($this->getIncomeId())) 
+		{
+			$sql = 'UPDATE incomes SET income_category_assigned_to_user_id = :category_id, amount = :amount, date_of_income = :date, income_comment = :comment WHERE id = :id';
+
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':category_id', $income_category_id, PDO::PARAM_INT);
+			$stmt->bindValue(':amount', $this->amount, PDO::PARAM_STR);
+			$stmt->bindValue(':date', $this->dates, PDO::PARAM_STR);
+			$stmt->bindValue(':comment', $this->comment, PDO::PARAM_STR);
+			$stmt->bindValue(':id', $_SESSION['income_id'], PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+		
+		return false;
+		
+	}
+	
+    /**
+     * Save the expense with the current property values
+     *
+     * @return boolean  True if the operation was saved, false otherwise
+     */
+	public function updateExpense()
+	{
+		$this->validate();
+		
+		$income_category_id = $this->getExpenseId();
+		
+		$payment_method_id = $this->getPaymentMethodId();
+		
+		if (empty($this->error_amount) && empty($this->error_comment) && ($this->getExpenseId()) && ($this->getPaymentMethodId()))
+		{
+			$sql = 'UPDATE expenses SET expense_category_assigned_to_user_id = :category_id, amount = :amount, payment_method_assigned_to_user_id = :payment, date_of_expense = :date, expense_comment = :comment WHERE id = :id';
+
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':category_id', $income_category_id, PDO::PARAM_INT);
+			$stmt->bindValue(':amount', $this->amount, PDO::PARAM_STR);
+			$stmt->bindValue(':date', $this->dates, PDO::PARAM_STR);
+			$stmt->bindValue(':payment', $payment_method_id, PDO::PARAM_INT);
+			$stmt->bindValue(':comment', $this->comment, PDO::PARAM_STR);
+			$stmt->bindValue(':id', $_SESSION['expense_id'], PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+		
+		return false;
+		
+	}
+	
+	/**
+     * Remove existing income
+     *
+     * @return void
+     */
+    public function removeIncome()
+    {
+		$sql = 'DELETE FROM incomes WHERE id = :id';
+
+		$db = static::getDB();
+		$stmt = $db->prepare($sql);
+
+		$stmt->bindValue(':id', $_SESSION['income_id'], PDO::PARAM_INT);
+
+		return $stmt->execute();
+	}
+	
+	/**
+     * Remove existing expense
+     *
+     * @return void
+     */
+    public function removeExpense()
+    {
+		$sql = 'DELETE FROM expenses WHERE id = :id';
+
+		$db = static::getDB();
+		$stmt = $db->prepare($sql);
+
+		$stmt->bindValue(':id', $_SESSION['income_id'], PDO::PARAM_INT);
+
+		return $stmt->execute();
+	}
+	
 }
