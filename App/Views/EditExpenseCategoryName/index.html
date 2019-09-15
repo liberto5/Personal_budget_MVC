@@ -66,7 +66,14 @@
 			{% endfor %}
 		{% endif %}
 		</div>
-		<button type="submit" class="btn btn-primary mr-2 mt-0 btn-sm" style="width:180px;">Save new category name</button>
+		<div class="input-group mb-2">
+			<div class="input-group-prepend w-50">
+				<span class="input-group-text w-100 justify-content-center">Monthly spending limit</span>
+			</div>
+			<input type="number" class="form-control" value="{{ user.limits }}" name="changeLimit" />	
+			<div class="info">Put "0" if you do not want any limit in the category</div>
+		</div>
+		<button type="submit" class="btn btn-primary mr-2 mt-0 btn-sm" style="width:180px;">Save changes</button>
 	</form>
 		
 	<div class="w-100 mt-2">

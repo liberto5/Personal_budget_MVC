@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use \Core\View;
 use \App\Models\FinancialOperation;
+use \App\Models\Balance;
+use \App\Models\User;
 use \App\Auth;
 use \App\Flash;
 
@@ -46,4 +48,49 @@ class AddExpense extends Authenticated
 			View::renderTemplate('AddExpense/index.html', ['financialOperation' => $financialOperation]);
 		}
     }
+	
+    /**
+     * Check the expense limit in DB
+     *
+     * @return integer with limit
+     */
+    public function checkLimitAction()
+    {		
+		$user = new User();
+		
+		$_SESSION['category'] = $_GET['category'];
+
+		if ($user->getExpenseLimit())
+		{
+			echo $user->getExpenseLimit();
+		}
+
+        else 
+		{
+			echo 'nie dziala checkLimitAction';
+		}
+    }
+	
+    /**
+     * Check how much money was already spent this month
+     *
+     * @return integer with amount of spent money
+     */
+    public function checkMoneySpentAction()
+    {		
+		$balance = new Balance();
+		
+		$_SESSION['category'] = $_GET['category'];
+
+		if ($balance->getMonthlyExpensesInCategory())
+		{
+			echo $balance->getMonthlyExpensesInCategory();
+		}
+
+        else 
+		{
+			echo '0';
+		}
+    }
+	
 }

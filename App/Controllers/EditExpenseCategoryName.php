@@ -15,7 +15,7 @@ class EditExpenseCategoryName extends Authenticated
 {
 	
     /**
-     * Change the name of existing category of expenses
+     * Change the name of existing category of expenses or spending limit for category
      *
      * @return void
      */
@@ -25,14 +25,14 @@ class EditExpenseCategoryName extends Authenticated
 		
 		if ($user->editExpenseCategoryName())
 		{
-			Flash::addMessage('Category\'s name changed successfully');
+			Flash::addMessage('Changes saved successfully');
 			
 			$this->redirect('/MainMenu/index');
 		}
 		
 		else 
 		{
-			Flash::addMessage('Category\'s name was not changed. Please try again');
+			Flash::addMessage('Changes were not saved. Please try again');
 			
 			$this->redirect('/MainMenu/index');
 		}

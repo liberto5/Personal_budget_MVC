@@ -38,7 +38,9 @@ class EditExpenses extends Authenticated
 		
 		if (isset($_POST['edit_button'])) 
 		{
-			View::renderTemplate('EditExpenseCategoryName/index.html', ['user' => $user]);
+			$user->limits = $user->getExpenseLimit();
+			
+			View::renderTemplate('EditExpenseCategoryName/index.html', ['user' => $user]);			
 		} 
 		
 		else if (isset($_POST['remove_button'])) 
