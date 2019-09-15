@@ -364,7 +364,32 @@ class Balance extends \Core\Model
 
 		$stmt->execute();
 		
-		return $stmt->fetchAll();
+		return $stmt->fetch();
+	}
+	
+    /**
+     * Get monthly amount spent on the category
+     *
+     * @return integer with monthly amount spent already in the category
+     */
+	public static function getMonthlyExpensesInCategory()
+	{
+		$sql = "SELECT SUM(exp.amount) sum FROM expenses_category_assigned_to_users cat INNER JOIN expenses exp WHERE exp.expense_category_assigned_to_user_id = cat.id AND (EXTRACT(YEAR_MONTH FROM date_of_expense)) = (EXTRACT(YEAR_MONTH FROM CURDATE())) AND exp.user_id = :user_id AND cat.name = :category";
+				
+		$db = static::getDB();
+		$stmt = $db->prepare($sql);
+		
+		$stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+		$stmt->bindParam(':category', $_SESSION['category'], PDO::PARAM_STR);
+		
+		$stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+		$stmt->execute();
+		
+		$row = $stmt->fetch();
+		
+		return $row->sum;
+		
 	}
 	
 	public function unsetAllSessionVariable()

@@ -28,6 +28,89 @@
                 }
             });
         });
+
+		function checkTheLimit(str) 
+		{
+			$.get('/AddExpense/checkLimit', {'category': str}, function(response)
+			{
+				var limits = Number(response);
+				sessionStorage.setItem("limits",limits);
+				document.getElementById("limits").innerHTML = limits.toFixed(2);
+			});
+			
+			$.get('/AddExpense/checkMoneySpent', {'category': str}, function(response)
+			{
+				var moneySpent = Number(response);
+				sessionStorage.setItem("moneySpent",moneySpent);
+				document.getElementById("moneySpent").innerHTML = moneySpent.toFixed(2);
+			});			
+			
+			setTimeout ( function() 
+			{
+				if( sessionStorage.getItem("limits") > 0 )
+				{
+					document.getElementById("frameWithLimits").className = 'collapse show';
+				}
+				else
+				{
+					document.getElementById("frameWithLimits").className = 'collapse hide';
+				}
+			}, 400 );
+			
+			setTimeout ( function() 
+			{
+				if( sessionStorage.getItem("howMuchLeft") < 0)
+				{
+					document.getElementById("frameWithLimits").style = 'background-color: #FA8072;';
+				}
+				else
+				{
+					document.getElementById("frameWithLimits").style = 'background-color: #FFFFFF;';
+				}
+			}, 500 );
+			
+			setTimeout( function()
+			{
+				var limits = sessionStorage.getItem("limits");
+				var moneySpent = sessionStorage.getItem("moneySpent");
+				var amountAdded = document.getElementById("amount").value;
+			
+				var howMuchLeft = limits - moneySpent - amountAdded;
+				sessionStorage.setItem("howMuchLeft",howMuchLeft);
+				document.getElementById("howMuchLeft").innerHTML = howMuchLeft.toFixed(2);
+			}, 400 );
+		}
+		
+
+			
+		function howMuchMoneyLeftToSpend()
+		{
+			setTimeout( function()
+			{
+				var limits = sessionStorage.getItem("limits");
+				var moneySpent = sessionStorage.getItem("moneySpent");
+				var amountAdded = document.getElementById("amount").value;
+			
+				var howMuchLeft = limits - moneySpent - amountAdded;
+				sessionStorage.setItem("howMuchLeft",howMuchLeft);
+				document.getElementById("howMuchLeft").innerHTML = howMuchLeft.toFixed(2);
+			}, 500 );
+		}
+		
+		function isAmountLeftBelowZero()
+		{
+			if( sessionStorage.getItem("howMuchLeft") < 0)
+			{
+				document.getElementById("frameWithLimits").className = 'collapse bg-danger shadow rounded-lg';
+			}
+			else
+			{
+				document.getElementById("frameWithLimits").className = 'collapse shadow rounded-lg';
+			}
+		}
+		
+		
+
 	</script>
 
 {% endblock %}
@@ -39,13 +122,20 @@
 	<p class="heading">Take control of your finances</p></a>
 				
 	<h4>Add details of expense</h4>
+	
+	<div id="frameWithLimits" class="collapse hide">
+		<h5>Limits in the category</h5>
+		<div>Limit: <span id="limits"></span></div>
+		<div>Money spent: <span id="moneySpent"></span></div>
+		<div>Saldo after operation: <span id="howMuchLeft"></span></div>
+	</div>
 
 	<form method="post" action="/AddExpense/create" id="formAddExpense">
 		<div class="input-group mb-2">
 			<div class="input-group-prepend w-25">
 				<span class="input-group-text w-100 justify-content-center">Amount</span>
 			</div>
-			<input type="text" class="form-control" placeholder="0.00" name="amount" />									
+			<input id="amount" type="text" class="form-control" placeholder="0.00" name="amount" onkeyup="checkTheLimit(category.value);"/>									
 		</div>
 		
 		<div>	
@@ -60,8 +150,13 @@
 			<div class="input-group-prepend w-25">
 				<span class="input-group-text w-100 justify-content-center">Date</span>
 			</div>
-			<input type="date" class="form-control" name="dates" />		
+			<input id="date" type="date" class="form-control" name="dates" onload="todayDate()"/>		
 		</div>
+		
+		<script>
+			let today = new Date().toISOString().substr(0, 10);
+			document.querySelector("#date").value = today;
+		</script>
 		
 		<div>
 			{% if financialOperation.error_date is not empty %}
@@ -76,9 +171,12 @@
 				<span class="input-group-text w-100 justify-content-center">Category</span>
 			</div>
 			<div class="dropdown flex-grow-1">
-				<select class="dropdown h-100 w-100" name="category">
+				<select id="category" class="dropdown h-100 w-100" name="category" onchange="checkTheLimit(this.value);">
 					{% for name in expenses_categories %}
-						<option>{{ expenses_categories[loop.index0].name }}</option>
+						<option value="{{ expenses_categories[loop.index0].name }}">{{ expenses_categories[loop.index0].name }} 
+						{% if expenses_categories[loop.index0].limits > 0 %}
+							--- Limit: {{ expenses_categories[loop.index0].limits }}</option>
+						{% endif %}
 					{% endfor %}
 				</select>
 			</div>

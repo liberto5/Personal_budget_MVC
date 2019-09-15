@@ -1,0 +1,19 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+</head>
+<body>
+<button type="button" onclick="DoRequest()">Load results</button>
+<div id="myDiv">div:</div>
+</body>
+<footer>
+<script>
+function DoRequest(){
+    $.get('gethint.php', {'action': 'ddd'}, function(response){
+        document.getElementById("myDiv").innerHTML = response;
+    });
+}
+</script>
+</footer>
+</html>

@@ -138,7 +138,7 @@ class User extends \Core\Model
 		$user_id = $user->id;
 		
 		$adding_standard_expenses_categories = "INSERT INTO expenses_category_assigned_to_users (name) SELECT name FROM expenses_category_default";
-		$adding_user_id_to_standard_expenses_categories = "UPDATE expenses_category_assigned_to_users SET user_id = '$user_id' WHERE user_id = 0";
+		$adding_user_id_to_standard_expenses_categories = "UPDATE expenses_category_assigned_to_users SET user_id = '$user_id', limits = 0 WHERE user_id = 0";
 
         $db = static::getDB();
         $stmt1 = $db->prepare($adding_standard_expenses_categories);
@@ -478,7 +478,7 @@ class User extends \Core\Model
 	}
 	
 	/**
-     * Edit the name of the category of expenses
+     * Edit the name or spending limit of the category of expenses
      *
      * @return void
      */
@@ -488,7 +488,7 @@ class User extends \Core\Model
 		
 		if (empty($this->error_name)) 
 		{
-			$sql = 'UPDATE expenses_category_assigned_to_users SET name = :name WHERE user_id = :user_id AND name = :oldName';
+			$sql = 'UPDATE expenses_category_assigned_to_users SET name = :name, limits = :limits WHERE user_id = :user_id AND name = :oldName';
 
 			$db = static::getDB();
 			$stmt = $db->prepare($sql);
@@ -496,6 +496,7 @@ class User extends \Core\Model
 			$stmt->bindValue(':name', $this->changeNameInput, PDO::PARAM_STR);
 			$stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_STR);
 			$stmt->bindValue(':oldName', $_SESSION['category'], PDO::PARAM_STR);
+			$stmt->bindValue(':limits', $this->changeLimit, PDO::PARAM_INT);
 
 			return $stmt->execute();
 		}
@@ -1039,6 +1040,32 @@ class User extends \Core\Model
 		$row = $stmt->fetch();
 		
 		return $row->id;
+	}
+	
+	/**
+     * Get spending limit of the category
+     *
+     * @return integer with limit value
+     */
+	public function getExpenseLimit()
+	{
+		$user_id = $_SESSION['user_id'];
+		$income_category = $_SESSION['category'];
+		
+		$sql = 'SELECT limits FROM expenses_category_assigned_to_users WHERE user_id = :user_id AND name = :name';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':name', $income_category, PDO::PARAM_STR);
+		
+		$stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+		$row = $stmt->fetch();
+		
+		return $row->limits;
 	}
 	
 }
