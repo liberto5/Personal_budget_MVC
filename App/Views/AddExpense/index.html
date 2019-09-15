@@ -81,36 +81,6 @@
 			}, 400 );
 		}
 		
-
-			
-		function howMuchMoneyLeftToSpend()
-		{
-			setTimeout( function()
-			{
-				var limits = sessionStorage.getItem("limits");
-				var moneySpent = sessionStorage.getItem("moneySpent");
-				var amountAdded = document.getElementById("amount").value;
-			
-				var howMuchLeft = limits - moneySpent - amountAdded;
-				sessionStorage.setItem("howMuchLeft",howMuchLeft);
-				document.getElementById("howMuchLeft").innerHTML = howMuchLeft.toFixed(2);
-			}, 500 );
-		}
-		
-		function isAmountLeftBelowZero()
-		{
-			if( sessionStorage.getItem("howMuchLeft") < 0)
-			{
-				document.getElementById("frameWithLimits").className = 'collapse bg-danger shadow rounded-lg';
-			}
-			else
-			{
-				document.getElementById("frameWithLimits").className = 'collapse shadow rounded-lg';
-			}
-		}
-		
-		
-
 	</script>
 
 {% endblock %}
@@ -150,7 +120,7 @@
 			<div class="input-group-prepend w-25">
 				<span class="input-group-text w-100 justify-content-center">Date</span>
 			</div>
-			<input id="date" type="date" class="form-control" name="dates" onload="todayDate()"/>		
+			<input id="date" type="date" class="form-control" name="dates"/>		
 		</div>
 		
 		<script>
