@@ -22,6 +22,18 @@ class ShowBalance extends Authenticated
      */
     public function indexAction()
     {
+		$age = array("periodsOptions"=>"current_month");
+		
+		$balance = new Balance($age);
+		
+		if (isset($_SESSION['custom_start']) && isset($_SESSION['custom_end']))
+			{
+				unset($_SESSION['custom_start']);
+				unset($_SESSION['custom_end']);
+			}
+		
+		$_SESSION['period'] = $balance->periodsOptions;
+		
 		View::renderTemplate('ShowBalance/index.html');
     }
 
