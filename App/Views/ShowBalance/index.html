@@ -59,6 +59,7 @@
 		chart_with_expenses.render();
 	}
 	
+	
 	</script>
 
 {% endblock %}
@@ -78,8 +79,7 @@
 				<div class="input-group-prepend w-50">
 					<span class="input-group-text w-100 justify-content-center">Select period of time</span>
 				</div>
-				<select id="periodsOptions" name="periodsOptions" class="w-50" onchange="if(this.options[this.selectedIndex].value!='custom'){ this.form.submit(); }" autofocus>
-					<option value="" disabled>Please select period of time</option>
+				<select id="periodsOptions" name="periodsOptions" class="w-50" onchange="if(this.options[this.selectedIndex].value!='custom'){ this.form.submit(); }">
 					<option value="current_month">Current month</option>
 					<option value="previous_month">Previous month</option>
 					<option value="current_year">Current year</option>
@@ -89,33 +89,29 @@
 		</form>
 		
 		<a href="/MainMenu/index"><button type="button" class="btn btn-primary">Back to main menu</button></a>
-		
-		<script>
-		window.onload = function () {
-			document.getElementById('periodsOptions').focus();
-		};
-		</script>
 	
 		<script>
-	
-			$('#periodsOptions').change(function() 
-			{ 
-				var selVal = $(this).val();
-				sessionStorage.setItem("SelItem", selVal);
-				
-			});
-			
-			var selItem = sessionStorage.getItem("SelItem");  
-			$('#periodsOptions').val(selItem);
 
-			$("#periodsOptions").on("change", function () 
-			{        
-				$modal = $('#myModal');
-				if($(this).val() === 'custom')
-				{
-					$modal.modal('show');
-				}
-			});
+		$('#periodsOptions').change(function() 
+		{ 
+			var selVal = $(this).val();
+			sessionStorage.setItem("SelItem", selVal);
+			
+		});
+		
+		var selItem = sessionStorage.getItem("SelItem");  
+		$('#periodsOptions').val(selItem);
+		
+		if (selItem == null) $('#periodsOptions').val("current_month");
+		
+		$("#periodsOptions").on("change", function () 
+		{        
+			$modal = $('#myModal');
+			if($(this).val() === 'custom')
+			{
+				$modal.modal('show');
+			}
+		});
 			
 		</script>
 		
@@ -256,5 +252,5 @@
 		</fieldset>
 	</fieldset>	
 </div>
-	
+
 {% endblock %}
